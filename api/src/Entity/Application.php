@@ -66,13 +66,8 @@ class Application
     private $cv;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\user", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $applicant;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\offer", inversedBy="applications")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $offer;
 
@@ -80,6 +75,12 @@ class Application
      * @ORM\Column(type="string", length=255)
      */
     private $status;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="applications")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $applicant;
 
     public function __construct()
     {
@@ -199,18 +200,6 @@ class Application
         return $this;
     }
 
-    public function getApplicant(): ?user
-    {
-        return $this->applicant;
-    }
-
-    public function setApplicant(user $applicant): self
-    {
-        $this->applicant = $applicant;
-
-        return $this;
-    }
-
     /**
      * @return Collection|offer[]
      */
@@ -250,6 +239,18 @@ class Application
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getApplicant(): ?User
+    {
+        return $this->applicant;
+    }
+
+    public function setApplicant(?User $applicant): self
+    {
+        $this->applicant = $applicant;
 
         return $this;
     }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -13,9 +15,9 @@ use App\Controller\EmailConfirmationController;
  * @ApiResource(
  *     itemOperations={
  *          "get",
- *          "put",
- *          "patch",
- *          "delete",
+ *          "put" = {"security" = "object.id == user.id"},
+ *          "patch" = {"security" = "object.id == user.id"},
+ *          "delete" = {"security" = "object.id == user.id"},
  *          "email_confirmation"={
  *              "method"="PATCH",
  *              "path"="/users/{id}/confirm/{confirmationToken}",
@@ -58,6 +60,22 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\application", mappedBy="applicant")
+     */
+    private $applications;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Offer", mappedBy="owner")
+     */
+    private $offers;
+
+    public function __construct()
+    {
+        $this->applications = new ArrayCollection();
+        $this->offers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -167,5 +185,67 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|application[]
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setApplicant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(application $application): self
+    {
+        if ($this->applications->contains($application)) {
+            $this->applications->removeElement($application);
+            // set the owning side to null (unless already changed)
+            if ($application->getApplicant() === $this) {
+                $application->setApplicant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Offer[]
+     */
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function addOffer(Offer $offer): self
+    {
+        if (!$this->offers->contains($offer)) {
+            $this->offers[] = $offer;
+            $offer->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffer(Offer $offer): self
+    {
+        if ($this->offers->contains($offer)) {
+            $this->offers->removeElement($offer);
+            // set the owning side to null (unless already changed)
+            if ($offer->getOwner() === $this) {
+                $offer->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }

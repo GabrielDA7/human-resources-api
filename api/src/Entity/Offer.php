@@ -7,7 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OfferRepository")
- * @ApiResource()
+ * @ApiResource(
+ *     itemOperations={
+ *          "get",
+ *          "put" = {"security" = "object.owner == user"},
+ *          "patch" = {"security" = "object.owner == user"},
+ *          "delete" = {"security" = "object.owner == user"}
+ *     }
+ * )
  */
 class Offer
 {
@@ -52,6 +59,12 @@ class Offer
      * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="offer")
      */
     private $applications;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\user", inversedBy="offers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $owner;
 
     public function getId(): ?int
     {
@@ -138,6 +151,18 @@ class Offer
     public function setApplications(?Application $applications): self
     {
         $this->applications = $applications;
+
+        return $this;
+    }
+
+    public function getOwner(): ?user
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?user $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }
