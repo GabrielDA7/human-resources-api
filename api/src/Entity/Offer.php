@@ -7,14 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OfferRepository")
- * @ApiResource(
- *     itemOperations={
- *          "get",
- *          "put",
- *          "patch",
- *          "delete"
- *     }
- * )
+ * @ApiResource()
  */
 class Offer
 {
@@ -54,6 +47,11 @@ class Offer
      * @ORM\Column(type="string", length=255)
      */
     private $location;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="offer")
+     */
+    private $applications;
 
     public function getId(): ?int
     {
@@ -128,6 +126,18 @@ class Offer
     public function setLocation(string $location): self
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getApplications(): ?Application
+    {
+        return $this->applications;
+    }
+
+    public function setApplications(?Application $applications): self
+    {
+        $this->applications = $applications;
 
         return $this;
     }
