@@ -15,7 +15,7 @@ class Application
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -66,7 +66,7 @@ class Application
     private $cv;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\offer", inversedBy="applications")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Offer", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
      */
     private $offer;

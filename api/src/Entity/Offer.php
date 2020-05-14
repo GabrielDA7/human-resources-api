@@ -4,15 +4,29 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OfferRepository")
  * @ApiResource(
+ *     normalizationContext = { "groups" = {"read"} },
+ *     denormalizationContext = { "groups" = {"write"} },
+ *     collectionOperations={
+ *          "post" = {
+ *              "defaults"= { "owner" = "user" },
+ *          }
+ *     },
  *     itemOperations={
  *          "get",
- *          "put" = {"security" = "object.owner == user"},
- *          "patch" = {"security" = "object.owner == user"},
- *          "delete" = {"security" = "object.owner == user"}
+ *          "put" = {
+ *              "security" = "object.owner == user"
+ *          },
+ *          "patch" = {
+ *              "security" = "object.owner == user"
+ *          },
+ *          "delete" = {
+ *              "security" = "object.owner == user"
+ *          }
  *     }
  * )
  */
@@ -20,49 +34,58 @@ class Offer
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
     private $companyDescription;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups({"read", "write"})
      */
     private $date;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
     private $location;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="offer")
+     * @Groups({"read"})
      */
     private $applications;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\user", inversedBy="offers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="offers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"read"})
      */
     private $owner;
 

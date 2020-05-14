@@ -8,11 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\EmailConfirmationController;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="`user`")
+ * @ORM\Table(name="users")
  * @ApiResource(
+ *     normalizationContext = { "groups" = {"read"} },
+ *     denormalizationContext = { "groups" = {"write"} },
  *     itemOperations={
  *          "get",
  *          "put" = {"security" = "object.id == user.id"},
@@ -30,44 +33,52 @@ class User implements UserInterface
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"read", "write"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"read"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Groups({"read"})
      */
     private $confirmationToken;
 
     /**
      * @ORM\Column(type="boolean", options={"default":"0"})
+     * @Groups({"read"})
      */
     private $enabled = 0;
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups({"write"})
      */
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\application", mappedBy="applicant")
+     * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="applicant")
+     * @Groups({"read"})
      */
     private $applications;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Offer", mappedBy="owner")
+     * @Groups({"read"})
      */
     private $offers;
 
