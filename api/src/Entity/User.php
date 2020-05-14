@@ -25,13 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "get",
  *          "put" = {"security" = "object == user"},
  *          "patch" = {"security" = "object == user"},
- *          "delete" = {"security" = "object == user"},
- *          "email_confirmation"={
- *              "method"="GET",
- *              "path"="/users/confirm/{confirmationToken}",
- *              "controller"=EmailConfirmationController::class
- *          }
- *     }
+ *          "delete" = {"security" = "object == user"}
+ *     },
+ *
  * )
  */
 class User implements UserInterface
@@ -61,7 +57,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", nullable=true)
      * @Groups({"read"})
      */
-    private string $confirmationToken;
+    private ?string $confirmationToken;
 
     /**
      * @ORM\Column(type="boolean")
