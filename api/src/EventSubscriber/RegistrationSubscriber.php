@@ -6,8 +6,11 @@ namespace App\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\User;
+use Swift_Mailer;
+use Swift_Message;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -17,17 +20,22 @@ class RegistrationSubscriber implements EventSubscriberInterface
 {
     private UserPasswordEncoderInterface $passwordEncoder;
     private TokenGeneratorInterface $tokenGenerator;
+    private Swift_Mailer $mailer;
+    private RequestStack $request;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, TokenGeneratorInterface $tokenGenerator)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, TokenGeneratorInterface $tokenGenerator, Swift_Mailer $mailer, RequestStack $request)
     {
         $this->passwordEncoder = $passwordEncoder;
         $this->tokenGenerator = $tokenGenerator;
+        $this->mailer = $mailer;
+        $this->request = $request;
     }
 
     public static function getSubscribedEvents()
     {
         return [
             KernelEvents::VIEW => ['registration', EventPriorities::PRE_WRITE],
+            KernelEvents::VIEW => ['sendEmailConfirmation', EventPriorities::POST_WRITE]
         ];
     }
 
@@ -41,15 +49,26 @@ class RegistrationSubscriber implements EventSubscriberInterface
         }
 
         $this->encodePassword($user);
-        $this->sendEmailConfirmation($user);
-    }
-
-    public function sendEmailConfirmation($user) {
         $user->setConfirmationToken($this->tokenGenerator->generateToken());
-        //send email
     }
 
-    public function encodePassword($user) {
+    public function sendEmailConfirmation(ViewEvent $event) : void
+    {
+        $user = $event->getControllerResult();
+        $method = $event->getRequest()->getMethod();
+        if (!$user instanceof User || Request::METHOD_POST !== $method) {
+            return;
+        }
+
+        $link = sprintf("%s/users/%d/confirm/%s", $this->request->getCurrentRequest()->getSchemeAndHttpHost(), $user->getId(), $user->getConfirmationToken());
+        $message = (new Swift_Message('Account confirmation'))
+            ->setFrom('hr@gmail.com')
+            ->setTo($user->getEmail())
+            ->setBody(sprintf('Confirm email : %s', $link));
+        $this->mailer->send($message);
+    }
+
+    private function encodePassword($user) {
         $passwordEncoded = $this->passwordEncoder->encodePassword($user, $user->getPassword());
         $user->setPassword($passwordEncoded);
     }
