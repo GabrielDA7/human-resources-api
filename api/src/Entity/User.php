@@ -9,12 +9,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\EmailConfirmationController;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="users")
  * @ApiResource(
- *     normalizationContext = { "groups" = {"read"} },
+ *     normalizationContext = {
+ *          "groups"={"read"},
+ *          "enable_max_depth"=true
+ *     },
  *     denormalizationContext = { "groups" = {"write"} },
  *     itemOperations={
  *          "get",
@@ -72,12 +76,14 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="applicant")
+     * @MaxDepth(1)
      * @Groups({"read"})
      */
     private $applications;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Offer", mappedBy="owner")
+     * @MaxDepth(1)
      * @Groups({"read"})
      */
     private $offers;

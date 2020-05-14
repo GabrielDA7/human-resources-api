@@ -5,11 +5,15 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OfferRepository")
  * @ApiResource(
- *     normalizationContext = { "groups" = {"read"} },
+ *     normalizationContext = {
+ *          "groups"={"read"},
+ *          "enable_max_depth"=true
+ *     },
  *     denormalizationContext = { "groups" = {"write"} },
  *     collectionOperations={
  *          "post" = {
@@ -78,6 +82,7 @@ class Offer
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="offer")
+     * @MaxDepth(2)
      * @Groups({"read"})
      */
     private $applications;
@@ -85,6 +90,7 @@ class Offer
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="offers")
      * @ORM\JoinColumn(nullable=false)
+     * @MaxDepth(2)
      * @Groups({"read"})
      */
     private $owner;

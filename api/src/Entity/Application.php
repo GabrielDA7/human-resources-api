@@ -6,10 +6,16 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ApplicationRepository")
- * @ApiResource()
+ * @ApiResource(
+ *      normalizationContext = {
+ *          "groups"={"read"},
+ *          "enable_max_depth"=true
+ *     },
+ * )
  */
 class Application
 {
@@ -67,6 +73,7 @@ class Application
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Offer", inversedBy="applications")
+     * @MaxDepth(2)
      * @ORM\JoinColumn(nullable=false)
      */
     private $offer;
@@ -79,6 +86,7 @@ class Application
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
+     * @MaxDepth(2)
      */
     private $applicant;
 
