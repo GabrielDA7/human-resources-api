@@ -103,18 +103,6 @@ final class SwaggerDecorator implements NormalizerInterface
             'responses' => [
                 Response::HTTP_OK => [
                     'description' => 'Ok',
-                    'content' => [
-                        "application/ld+json" => [
-                            "schema" =>  [
-                                '$ref' => "#/components/schemas/Invitation:jsonld"
-                            ]
-                        ],
-                        'application/json' => [
-                            'schema' => [
-                                '$ref' => '#/components/schemas/Invitation',
-                            ],
-                        ],
-                    ],
                 ],
                 Response::HTTP_BAD_REQUEST => [
                     'description' => 'Wrong token'

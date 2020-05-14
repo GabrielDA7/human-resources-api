@@ -99,17 +99,14 @@ class Offer
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="offer")
-     */
-    private $offers;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="offer")
+     * @MaxDepth(2)
+     * @Groups({"read"})
      */
     private $invitations;
 
     public function __construct()
     {
-        $this->offers = new ArrayCollection();
+        $this->applications = new ArrayCollection();
         $this->invitations = new ArrayCollection();
     }
 
@@ -190,17 +187,7 @@ class Offer
         return $this;
     }
 
-    public function getApplications(): ?Application
-    {
-        return $this->applications;
-    }
 
-    public function setApplications(?Application $applications): self
-    {
-        $this->applications = $applications;
-
-        return $this;
-    }
 
     public function getOwner(): ?user
     {
@@ -210,24 +197,6 @@ class Offer
     public function setOwner(?user $owner): self
     {
         $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Invitation[]
-     */
-    public function getOffers(): Collection
-    {
-        return $this->offers;
-    }
-
-    public function addApplicant(Invitation $applicant): self
-    {
-        if (!$this->offers->contains($applicant)) {
-            $this->offers[] = $applicant;
-            $applicant->setOffer($this);
-        }
 
         return $this;
     }
