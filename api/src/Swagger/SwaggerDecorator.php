@@ -84,6 +84,44 @@ final class SwaggerDecorator implements NormalizerInterface
             ],
         ];
 
+        $docs['paths']['/invitations/invite']['post'] = [
+            'tags' => ['Invitation'],
+            'summary' => 'invite',
+            'parameters' => [
+                [
+                    'in' => 'body',
+                    'schema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'userId' => ['type'=> 'integer'],
+                            'offerId' => ['type'=> 'integer'],
+                        ]
+                    ],
+                    'required' => true,
+                ],
+            ],
+            'responses' => [
+                Response::HTTP_OK => [
+                    'description' => 'Ok',
+                    'content' => [
+                        "application/ld+json" => [
+                            "schema" =>  [
+                                '$ref' => "#/components/schemas/Invitation:jsonld"
+                            ]
+                        ],
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/Invitation',
+                            ],
+                        ],
+                    ],
+                ],
+                Response::HTTP_BAD_REQUEST => [
+                    'description' => 'Wrong token'
+                ],
+            ],
+        ];
+
         $tokenDocumentation = [
             'paths' => [
                 '/authentication_token' => [

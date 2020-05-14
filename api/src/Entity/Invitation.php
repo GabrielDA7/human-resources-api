@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  *          "groups"={"read"},
  *          "enable_max_depth"=true
  *     },
- *     denormalizationContext = { "groups" = {"write"} },
+ *     denormalizationContext = { "groups" = {"write"} }
  * )
  */
 class Invitation

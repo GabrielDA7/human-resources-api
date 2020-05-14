@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "get",
  *          "put" = {"security" = "object == user"},
  *          "patch" = {"security" = "object == user"},
- *          "delete" = {"security" = "object == user"}
+ *          "delete" = {"security" = "object == user"},
  *     },
  *
  * )

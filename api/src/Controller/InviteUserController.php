@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class InviteUserController
 {
@@ -20,9 +21,19 @@ class InviteUserController
         $this->userRepository = $userRepository;
     }
 
-    public function __invoke(InviteUserRequestParam $inviteUserRequestParam) {
-        $user = $this->userRepository->findOneBy(["email" => $inviteUserRequestParam->getUserEmail()]);
-        $offer = $this->userRepository->find($inviteUserRequestParam->getOfferId());
+    /**
+     * @Route(
+     *     name="invitation_invite_user",
+     *     path="/invitations/invite",
+     *     methods={"POST"}
+     * )
+     */
+    public function __invoke(User $user, Offer $offer) {
+//        $user = $this->userRepository->findOneBy(["email" => $inviteUserRequestParam->getUserEmail()]);
+//        $offer = $this->userRepository->find($inviteUserRequestParam->getOfferId());
+        dump($user);
+        dump($offer);
+        die();
         $application = new Application();
 //        $application->set
 //        $data->setConfirmationToken(null);
