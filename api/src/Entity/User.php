@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "delete" = {"security" = "object == user"},
  *          "email_confirmation"={
  *              "method"="GET",
- *              "path"="/users/{id}/confirm/{confirmationToken}",
+ *              "path"="/users/confirm/{confirmationToken}",
  *              "controller"=EmailConfirmationController::class
  *          }
  *     }
