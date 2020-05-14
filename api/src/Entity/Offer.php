@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
@@ -17,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  *     denormalizationContext = { "groups" = {"write"} },
  *     collectionOperations={
  *          "post" = {
+ *              "security" = "is_granted('ROLE_RECRUITER')",
  *              "defaults"= { "owner" = "user" },
  *          }
  *     },
@@ -94,6 +97,22 @@ class Offer
      * @Groups({"read"})
      */
     private $owner;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="offer")
+     */
+    private $offers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="offer")
+     */
+    private $invitations;
+
+    public function __construct()
+    {
+        $this->offers = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -192,6 +211,68 @@ class Offer
     public function setOwner(?user $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Invitation[]
+     */
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function addApplicant(Invitation $applicant): self
+    {
+        if (!$this->offers->contains($applicant)) {
+            $this->offers[] = $applicant;
+            $applicant->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicant(Invitation $applicant): self
+    {
+        if ($this->offers->contains($applicant)) {
+            $this->offers->removeElement($applicant);
+            // set the owning side to null (unless already changed)
+            if ($applicant->getOffer() === $this) {
+                $applicant->setOffer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Invitation[]
+     */
+    public function getInvitations(): Collection
+    {
+        return $this->invitations;
+    }
+
+    public function addInvitation(Invitation $invitation): self
+    {
+        if (!$this->invitations->contains($invitation)) {
+            $this->invitations[] = $invitation;
+            $invitation->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitation(Invitation $invitation): self
+    {
+        if ($this->invitations->contains($invitation)) {
+            $this->invitations->removeElement($invitation);
+            // set the owning side to null (unless already changed)
+            if ($invitation->getOffer() === $this) {
+                $invitation->setOffer(null);
+            }
+        }
 
         return $this;
     }

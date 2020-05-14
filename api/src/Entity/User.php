@@ -10,6 +10,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\EmailConfirmationController;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -22,11 +23,11 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  *     denormalizationContext = { "groups" = {"write"} },
  *     itemOperations={
  *          "get",
- *          "put" = {"security" = "object.id == user.id"},
- *          "patch" = {"security" = "object.id == user.id"},
- *          "delete" = {"security" = "object.id == user.id"},
+ *          "put" = {"security" = "object == user"},
+ *          "patch" = {"security" = "object == user"},
+ *          "delete" = {"security" = "object == user"},
  *          "email_confirmation"={
- *              "method"="PATCH",
+ *              "method"="GET",
  *              "path"="/users/{id}/confirm/{confirmationToken}",
  *              "controller"=EmailConfirmationController::class
  *          }
@@ -41,57 +42,64 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @Groups({"read"})
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"read", "write"})
+     * @Assert\Email()
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"read"})
+     * @Groups({"read", "write"})
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @ORM\Column(type="string", nullable=true)
      * @Groups({"read"})
      */
-    private $confirmationToken;
+    private string $confirmationToken;
 
     /**
-     * @ORM\Column(type="boolean", options={"default":"0"})
+     * @ORM\Column(type="boolean")
      * @Groups({"read"})
      */
-    private $enabled = 0;
+    private bool $enabled = false;
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      * @Groups({"write"})
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Application", mappedBy="applicant")
      * @MaxDepth(1)
      * @Groups({"read"})
      */
-    private $applications;
+    private Collection $applications;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Offer", mappedBy="owner")
      * @MaxDepth(1)
      * @Groups({"read"})
      */
-    private $offers;
+    private Collection $offers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="applicant")
+     */
+    private $invitations;
 
     public function __construct()
     {
         $this->applications = new ArrayCollection();
         $this->offers = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,6 +268,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($offer->getOwner() === $this) {
                 $offer->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Invitation[]
+     */
+    public function getInvitations(): Collection
+    {
+        return $this->invitations;
+    }
+
+    public function addInvitation(Invitation $invitation): self
+    {
+        if (!$this->invitations->contains($invitation)) {
+            $this->invitations[] = $invitation;
+            $invitation->setApplicant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitation(Invitation $invitation): self
+    {
+        if ($this->invitations->contains($invitation)) {
+            $this->invitations->removeElement($invitation);
+            // set the owning side to null (unless already changed)
+            if ($invitation->getApplicant() === $this) {
+                $invitation->setApplicant(null);
             }
         }
 

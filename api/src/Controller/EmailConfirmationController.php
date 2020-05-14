@@ -4,29 +4,30 @@
 namespace App\Controller;
 
 
-use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EmailConfirmationController
 {
+    private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
     }
 
-    public function __invoke(User $data, $confirmationToken) {
-        if(!$confirmationToken || $data->getConfirmationToken() != $confirmationToken) {
+    public function __invoke($confirmationToken) {
+        $user = $this->userRepository->findOneBy(["confirmationToken" => $confirmationToken]);
+        if (!$user)
             throw new BadRequestHttpException();
-        }
 
-        $data->setConfirmationToken(null);
-        $data->setEnabled(true);
+        $user->setConfirmationToken(null);
+        $user->setEnabled(true);
         $this->entityManager->flush();
 
-        return $data;
+        return $user;
     }
 }

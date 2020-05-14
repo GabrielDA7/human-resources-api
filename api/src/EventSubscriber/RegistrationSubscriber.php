@@ -12,6 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -34,8 +35,12 @@ class RegistrationSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::VIEW => ['registration', EventPriorities::PRE_WRITE],
-            KernelEvents::VIEW => ['sendEmailConfirmation', EventPriorities::POST_WRITE]
+            KernelEvents::VIEW => [
+                ['registration', EventPriorities::PRE_WRITE],
+                ['sendEmailConfirmation', EventPriorities::POST_WRITE]
+            ],
+
+
         ];
     }
 
@@ -59,12 +64,13 @@ class RegistrationSubscriber implements EventSubscriberInterface
         if (!$user instanceof User || Request::METHOD_POST !== $method) {
             return;
         }
+        if (in_array("ROLE_ADMIN", $user->getRoles()))
+            throw new BadRequestHttpException();
 
-        $link = sprintf("%s/users/%d/confirm/%s", $this->request->getCurrentRequest()->getSchemeAndHttpHost(), $user->getId(), $user->getConfirmationToken());
         $message = (new Swift_Message('Account confirmation'))
             ->setFrom('hr@gmail.com')
             ->setTo($user->getEmail())
-            ->setBody(sprintf('Confirm email : %s', $link));
+            ->setBody(sprintf('Confirm token : %s', $user->getConfirmationToken()));
         $this->mailer->send($message);
     }
 

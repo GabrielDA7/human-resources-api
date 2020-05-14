@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  *      normalizationContext = {
  *          "groups"={"read"},
  *          "enable_max_depth"=true
- *     },
+ *     }
  * )
  */
 class Application
