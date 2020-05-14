@@ -49,18 +49,10 @@ final class SwaggerDecorator implements NormalizerInterface
             ],
         ];
 
-        $docs['paths']['/users/{id}/confirm/{confirmationToken}']['get'] = [
+        $docs['paths']['/users/confirm/{confirmationToken}']['get'] = [
             'tags' => ['User'],
             'summary' => 'test',
             'parameters' => [
-                [
-                    'name' => 'id',
-                    'in' => 'path',
-                    'schema' => [
-                        'type' => 'string'
-                    ],
-                    'required' => true,
-                ],
                 [
                     'name' => 'confirmationToken',
                     'in' => 'path',

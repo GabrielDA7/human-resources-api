@@ -39,8 +39,6 @@ class RegistrationSubscriber implements EventSubscriberInterface
                 ['registration', EventPriorities::PRE_WRITE],
                 ['sendEmailConfirmation', EventPriorities::POST_WRITE]
             ],
-
-
         ];
     }
 

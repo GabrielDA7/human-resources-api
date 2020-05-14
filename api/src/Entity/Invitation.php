@@ -4,10 +4,18 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\InvitationRepository")
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext = {
+ *          "groups"={"read"},
+ *          "enable_max_depth"=true
+ *     },
+ *     denormalizationContext = { "groups" = {"write"} },
+ * )
  */
 class Invitation
 {
@@ -21,17 +29,22 @@ class Invitation
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Offer", inversedBy="invitations")
      * @ORM\JoinColumn(nullable=false)
+     * @MaxDepth(1)
+     * @Groups({"read", "write"})
      */
     private $offer;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="invitations")
      * @ORM\JoinColumn(nullable=false)
+     * @MaxDepth(1)
+     * @Groups({"read", "write"})
      */
     private $applicant;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
      */
     private $token;
 
