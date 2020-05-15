@@ -18,7 +18,8 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  *     collectionOperations={
  *          "post" = {
  *              "security" = "is_granted('ROLE_RECRUITER')",
- *          }
+ *          },
+ *          "get"
  *     },
  * )
  */
