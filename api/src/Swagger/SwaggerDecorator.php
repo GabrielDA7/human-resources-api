@@ -84,18 +84,23 @@ final class SwaggerDecorator implements NormalizerInterface
             ],
         ];
 
-        $docs['paths']['/invitations/invite']['post'] = [
+        $docs['paths']['/invitations/invite/{offerId}']['get'] = [
             'tags' => ['Invitation'],
             'summary' => 'invite',
             'parameters' => [
                 [
-                    'in' => 'body',
+                    'name' => 'offerId',
+                    'in' => 'path',
                     'schema' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'userId' => ['type'=> 'integer'],
-                            'offerId' => ['type'=> 'integer'],
-                        ]
+                        'type' => 'integer',
+                    ],
+                    'required' => true,
+                ],
+                [
+                    'name' => 'userEmail',
+                    'in' => 'query',
+                    'schema' => [
+                        'type' => 'string',
                     ],
                     'required' => true,
                 ],

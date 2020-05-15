@@ -4,42 +4,47 @@
 namespace App\Controller;
 
 
-use App\Entity\Application;
+use App\Entity\Invitation;
 use App\Entity\Offer;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class InviteUserController
 {
-    private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
+    private TokenGeneratorInterface $tokenGenerator;
+    private SerializerInterface $serializer;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(SerializerInterface $serializer, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGenerator)
     {
-        $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
+        $this->tokenGenerator = $tokenGenerator;
+        $this->serializer = $serializer;
     }
 
     /**
      * @Route(
      *     name="invitation_invite_user",
-     *     path="/invitations/invite",
-     *     methods={"POST"}
+     *     path="/invitations/invite/{offerId}",
+     *     methods={"GET"}
      * )
      */
-    public function __invoke(User $user, Offer $offer) {
-//        $user = $this->userRepository->findOneBy(["email" => $inviteUserRequestParam->getUserEmail()]);
-//        $offer = $this->userRepository->find($inviteUserRequestParam->getOfferId());
-        dump($user);
-        dump($offer);
-        die();
-        $application = new Application();
-//        $application->set
-//        $data->setConfirmationToken(null);
-//        $data->setEnabled(true);
+    public function __invoke(int $offerId) {
+        $request  = Request::createFromGlobals();
+        $email = $request->query->get("userEmail");
+        $offer = $this->entityManager->getRepository(Offer::class)->find($offerId);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
+        $invitation = new Invitation();
+        $invitation->setApplicant($user);
+        $invitation->setOffer($offer);
+        $invitation->setToken($this->tokenGenerator->generateToken());
+        $this->entityManager->persist($invitation);
         $this->entityManager->flush();
-
-//        return $data;
+        return new JsonResponse($this->serializer->serialize($invitation, "json"));
     }
 }

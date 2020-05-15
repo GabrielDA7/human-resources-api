@@ -87,6 +87,8 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="applicant")
+     * @MaxDepth(1)
+     * @Groups({"read"})
      */
     private $invitations;
 
