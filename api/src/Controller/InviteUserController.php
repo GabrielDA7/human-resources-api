@@ -12,6 +12,7 @@ use Swift_Mailer;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -43,6 +44,9 @@ class InviteUserController
         $email = $request->query->get("userEmail");
         $offer = $this->entityManager->getRepository(Offer::class)->find($offerId);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
+        if (!$user || !$offer)
+            throw new BadRequestHttpException();
+
         $invitation = new Invitation();
         $invitation->setApplicant($user);
         $invitation->setOffer($offer);
