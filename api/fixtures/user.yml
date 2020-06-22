@@ -1,0 +1,5 @@
+App\Entity\User:
+    user_1:
+        email: "user@gmail.com"
+        roles: ["ROLE_USER"]
+        password: <encode(@self, "pwd")>

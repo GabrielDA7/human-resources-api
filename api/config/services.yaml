@@ -40,3 +40,6 @@ services:
         arguments: [ '@request_stack' ]
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    App\DataFixtures\Faker\Provider\PasswordProvider:
+        tags: [ { name: nelmio_alice.faker.provider } ]
