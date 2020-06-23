@@ -17,7 +17,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-require_once __DIR__  . '/../../../bin/.phpunit/phpunit-8.3-0/src/Framework/Assert/Functions.php';
+require_once __DIR__  . '/../../../bin/.phpunit/phpunit-7.5-0/src/Framework/Assert/Functions.php';
 
 class ApiFeatureContext implements Context
 {
