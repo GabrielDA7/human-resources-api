@@ -18,8 +18,11 @@ trait AuthTrait
      */
     public function iAuthenticateWithEmailAndPassword($email, $password)
     {
+        $email = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $email);
         $this->requestPayload = ["email" => $email, "password" => $password];
         $this->iRequest("POST", "/authentication_token");
         $this->token = $this->arrayGet($this->getScopePayload(), "token", true);
+        unset($this->requestPayload["email"]);
+        unset($this->requestPayload["password"]);
     }
 }

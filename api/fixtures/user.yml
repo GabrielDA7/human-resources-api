@@ -6,6 +6,13 @@ App\Entity\User:
         confirmationToken: <regexify('[A-Z0-9]{200,250}')>
         enabled: true
         
+    user_not_confirmed:
+        email: "user.not.confirmed@gmail.com"
+        roles: ["ROLE_USER"]
+        password: <encode(@self, "password")>
+        confirmationToken: <regexify('[A-Z0-9]{200,250}')>
+        enabled: false
+            
     user_admin_1:
         email: "admin@gmail.com"
         roles: ["ROLE_ADMIN"]

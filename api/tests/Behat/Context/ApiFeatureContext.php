@@ -243,6 +243,19 @@ class ApiFeatureContext implements Context
     }
 
     /**
+     * @Then /^the "([^"]*)" property should be null$/
+     */
+    public function thePropertyIsNull($property)
+    {
+        $payload = $this->getScopePayload();
+        assertSame(
+            null,
+            $this->arrayGet($payload, $property),
+            "Asserting the [$property] property in current scope [{$this->scope}] is null."
+        );
+    }
+
+    /**
      * @Then /^the "([^"]*)" property should be a boolean equalling "([^"]*)"$/
      */
     public function thePropertyIsABooleanEqualling($property, $expectedValue)
@@ -269,6 +282,8 @@ class ApiFeatureContext implements Context
     public function thePropertyIsAIntegerEqualling($property, $expectedValue)
     {
         $payload = $this->getScopePayload();
+
+        $expectedValue = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $expectedValue);
         $actualValue = $this->arrayGet($payload, $property);
 
         $this->thePropertyIsAnInteger($property);
