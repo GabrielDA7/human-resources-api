@@ -1,7 +1,7 @@
 App\Entity\User:
-  user_{1..20}:
-    email: <email()>
-    roles: ["ROLE_RECRUITER"]
-    password: <regexify('[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}')>
-    confirmationToken: <regexify('[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}')>
-    enabled: <boolean()>
+    user_1:
+        email: "user@gmail.com"
+        roles: ["ROLE_USER"]
+        password: <encode(@self, "pwd")>
+        confirmationToken: <regexify('[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}')>
+        enabled: <boolean()>

@@ -2,6 +2,8 @@
 
 namespace App\Tests\Behat\Context\Traits;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\JWTTokenAuthenticator;
+
 trait AuthTrait
 {
     /**
@@ -16,6 +18,8 @@ trait AuthTrait
      */
     public function iAuthenticateWithEmailAndPassword($email, $password)
     {
-        //$this->token = ;
+        $this->requestPayload = ["email" => $email, "password" => $password];
+        $this->iRequest("POST", "/authentication_token");
+        $this->token = $this->arrayGet($this->getScopePayload(), "token", true);
     }
 }
