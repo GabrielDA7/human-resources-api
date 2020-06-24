@@ -62,4 +62,31 @@ Feature: _User_
     """
     And I request "POST /users"
     Then the response status code should be 400
-    And the "message" property should be a string equalling "The email should be a correct email"
+    And the "email" property should be a string equalling "This value is not a valid email address."
+
+
+  Scenario: Expecting error when trying to create an user admin
+    When I have the payload
+    """
+    {
+      "email": "valid.user@gmail.com",
+      "roles": [
+        "ROLE_ADMIN"
+      ],
+      "password": "password"
+    }
+    """
+    And I request "POST /users"
+    Then the response status code should be 400
+    And the "roles" property should be a string equalling "This value can't be ROLE_ADMIN."
+
+  Scenario: get user
+    When I request "GET /users/{{ user_1.id }}"
+    Then the response status code should be 200
+    And the "email" property should be a string equalling "{{ user_1.email }}"
+    And the "password" property should not exist
+
+  Scenario: get user that not exists
+    When I request "GET /users/-1"
+    Then the response status code should be 404
+

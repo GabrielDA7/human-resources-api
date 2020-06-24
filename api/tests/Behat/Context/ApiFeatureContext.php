@@ -216,6 +216,7 @@ class ApiFeatureContext implements Context
     public function thePropertyIsAStringEqualling($property, $expectedValue)
     {
         $payload = $this->getScopePayload();
+        $expectedValue = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $expectedValue);
 
         $this->thePropertyIsAString($property);
 
