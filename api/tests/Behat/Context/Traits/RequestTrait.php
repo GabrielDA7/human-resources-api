@@ -3,6 +3,7 @@
 namespace App\Tests\Behat\Context\Traits;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Client;
+use App\Tests\Behat\Manager\ReferenceManager;
 use Behat\Gherkin\Node\PyStringNode;
 use GuzzleHttp\Psr7\Request;
 
@@ -50,12 +51,15 @@ trait RequestTrait
      */
     protected $lastResponse;
 
+    protected ReferenceManager $referenceManager;
+
     /**
      * @Given I have the payload
      */
     public function iHaveThePayload(PyStringNode $requestPayload)
     {
-        $this->requestPayload = json_decode($requestPayload->getRaw());
+        $payload = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $requestPayload->getRaw());
+        $this->requestPayload = json_decode($payload);;
     }
 
     /**
@@ -63,8 +67,8 @@ trait RequestTrait
      */
     public function iRequest($httpMethod, $resource)
     {
+        $resource = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $resource);
         $method = strtoupper($httpMethod);
-
         $options = array();
 
         if($this->token) {

@@ -13,6 +13,7 @@ class FixtureManager implements ProcessorInterface
      * @var PersisterLoader
      */
     private $fixtureLoader;
+    private $context = [];
 
     public function __construct(IriConverterInterface $iriConverter, KernelInterface $kernel)
     {
@@ -26,7 +27,8 @@ class FixtureManager implements ProcessorInterface
      */
     public function load(array $files): void
     {
-        $this->fixtureLoader->load($files);
+        $data = $this->fixtureLoader->load($files);
+        $this->context = array_merge($this->context, $data);
     }
 
     /**
@@ -46,4 +48,14 @@ class FixtureManager implements ProcessorInterface
         //dump($fixtureId, $object);
         // do nothing now
     }
+
+    /**
+     * @return mixed
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+
 }

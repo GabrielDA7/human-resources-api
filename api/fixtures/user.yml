@@ -3,5 +3,12 @@ App\Entity\User:
         email: "user@gmail.com"
         roles: ["ROLE_USER"]
         password: <encode(@self, "password")>
-        confirmationToken: <regexify('[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}')>
-        enabled: <boolean()>
+        confirmationToken: <regexify('[A-Z0-9]{200,250}')>
+        enabled: true
+        
+    user_admin_1:
+        email: "admin@gmail.com"
+        roles: ["ROLE_ADMIN"]
+        password: <encode(@self, "password")>
+        confirmationToken: <regexify('[A-Z0-9]{200,250}')>
+        enabled: true
