@@ -2,6 +2,6 @@ App\Entity\User:
     user_1:
         email: "user@gmail.com"
         roles: ["ROLE_USER"]
-        password: <encode(@self, "pwd")>
+        password: <encode(@self, "password")>
         confirmationToken: <regexify('[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}')>
         enabled: <boolean()>
