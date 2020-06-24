@@ -69,10 +69,9 @@ trait RequestTrait
     {
         $resource = $this->referenceManager->replaceReferences($this->fixtureManager->getContext(), $resource);
         $method = strtoupper($httpMethod);
-        $options = array();
 
         if($this->token) {
-            $options = ['Authorization' => ['Bearer ' . $this->token]];
+            $this->requestHeaders['Authorization'] = ['Bearer ' . $this->token];
         }
 
         $this->lastRequest = new Request(
