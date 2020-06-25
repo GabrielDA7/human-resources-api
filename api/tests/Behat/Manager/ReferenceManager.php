@@ -9,34 +9,34 @@ class ReferenceManager
     const REFERENCE_SUFFIX = "}}";
     const REFERENCE_REGEX = "/{{(.*?)}}/";
 
-    public function replaceReferences(array $fixtureContext, string $reference): string {
-        $countReferenceToReplace = substr_count($reference, self::REFERENCE_PREFIX);
+    public function replaceReferences(array $fixtureContext, string $valueWithReferences): string {
+        $countReferenceToReplace = substr_count($valueWithReferences, self::REFERENCE_PREFIX);
         for ($i = 0; $i < $countReferenceToReplace; $i++) {
-            $reference = $this->replaceReference($fixtureContext, $reference);
+            $valueWithReferences = $this->replaceReference($fixtureContext, $valueWithReferences);
         }
-        return $reference;
+        return $valueWithReferences;
     }
 
-    private function replaceReference(array $fixtureContext, string $reference) {
-        $ref = $this->extractRef($reference);
+    private function replaceReference(array $fixtureContext, string $valueWithReferences) {
+        $ref = $this->extractFirstRef($valueWithReferences);
         $path = explode(self::PATH_SEPARATOR, $ref);
-        $result = null;
+        $value = null;
         for ($pathStep = 0; $pathStep < count($path); $pathStep++) {
             if ($pathStep == 0)
-                $result = $this->findEntity($fixtureContext, $path, $pathStep);
+                $value = $this->findEntity($fixtureContext, $path, $pathStep);
             else {
                 $getter = $this->createGetter($path[$pathStep]);
-                $result = $result->$getter();
+                $value = $value->$getter();
             }
         }
-        return preg_replace(self::REFERENCE_REGEX, $result, $reference, 1);
+        return preg_replace(self::REFERENCE_REGEX, $value, $valueWithReferences, 1);
     }
 
     private function createGetter($property): string {
         return "get" . ucfirst($property);
     }
 
-    private function extractRef($string) : string {
+    private function extractFirstRef($string) : string {
         preg_match(self::REFERENCE_REGEX, $string, $ref);
         $ref = str_replace(" ", "", $ref[0]);
         $ref = str_replace(self::REFERENCE_PREFIX, "", $ref);
