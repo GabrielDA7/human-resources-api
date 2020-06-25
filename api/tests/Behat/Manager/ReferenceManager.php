@@ -22,13 +22,19 @@ class ReferenceManager
         $path = explode(self::PATH_SEPARATOR, $ref);
         $value = null;
         for ($pathStep = 0; $pathStep < count($path); $pathStep++) {
-            if ($pathStep == 0)
-                $value = $this->findEntity($fixtureContext, $path, $pathStep);
-            else {
-                $getter = $this->createGetter($path[$pathStep]);
-                $value = $value->$getter();
-            }
+            $value = $this->findValueForCurrentStep($pathStep, $fixtureContext, $path, $value);
         }
+        return $this->replaceFirstOccurrence($value, $valueWithReferences);
+    }
+
+    private function findValueForCurrentStep(int $pathStep, array $fixtureContext, array $path, $value) {
+        if ($pathStep == 0)
+            return $this->findEntity($fixtureContext, $path, $pathStep);
+        $getter = $this->createGetter($path[$pathStep]);
+        return $value->$getter();
+    }
+
+    private function replaceFirstOccurrence($value, string $valueWithReferences) {
         return preg_replace(self::REFERENCE_REGEX, $value, $valueWithReferences, 1);
     }
 
