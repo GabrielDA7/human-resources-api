@@ -12,6 +12,13 @@ App\Entity\User:
         password: <encode(@self, "password")>
         confirmationToken: <regexify('[A-Z0-9]{200,250}')>
         enabled: false
+    
+    user_recruiter:
+        email: "user.recruiter@gmail.com"
+        roles: ["ROLE_RECRUITER"]
+        password: <encode(@self, "password")>
+        confirmationToken: <regexify('[A-Z0-9]{200,250}')>
+        enabled: true
             
     user_admin_1:
         email: "admin@gmail.com"

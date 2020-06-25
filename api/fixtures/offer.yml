@@ -1,0 +1,9 @@
+App\Entity\Offer:
+    offer_1:
+        name: "dev offre"
+        companyDescription: "company description"
+        description:  "offer description"
+        date: <dateTime('Y-m-d')>
+        type: "stage"
+        location: "Paris"
+        owner: '@user_recruiter'
